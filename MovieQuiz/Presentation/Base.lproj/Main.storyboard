@@ -113,7 +113,9 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="counterLabel" destination="lR1-ha-S6g" id="tZ9-3C-Tty"/>
                         <outlet property="imageView" destination="fBp-gP-Pc7" id="qjT-rr-AGK"/>
+                        <outlet property="textLabel" destination="wJX-FS-wnE" id="lg7-2N-2cF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
