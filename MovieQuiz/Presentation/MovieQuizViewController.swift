@@ -29,13 +29,11 @@ final class MovieQuizViewController: UIViewController {
         let image: String
         // строка с вопросом о рейтинге фильма
         let text: String
-        // булевое значение (true, false), правильный ответ на вопрос
+        // правильный ли ответ на вопрос
         let correctAnswer: Bool
         }
 
     // MARK: - Outlets
-    @IBOutlet weak var yesButton: UIButton!
-    @IBOutlet weak var filmQuestionLabel: UILabel!
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
@@ -46,7 +44,7 @@ final class MovieQuizViewController: UIViewController {
         
         // Берём текущий вопрос из массива вопросов по индексу текущего вопроса
         let currentQuestion = questions[currentQuestionIndex]
-        // Сконвертируем модель вопроса во вью модель
+        // Конвертируем модель вопроса во вью модель
         let viewModel = convert(model: currentQuestion)
         // Отображаем вопрос на экране
         show(quiz: viewModel)
@@ -70,11 +68,10 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - Private Properties
     
-    // переменная с индексом текущего вопроса, начальное значение 0
-    // (по этому индексу будем искать вопрос в массиве, где индекс первого элемента 0, а не 1)
+    // по этому индексу будем искать вопрос в массиве, где индекс первого элемента 0, а не 1
     private var currentQuestionIndex = 0
 
-    // переменная со счётчиком правильных ответов, начальное значение закономерно 0
+    // переменная со счётчиком правильных ответов
     private var correctAnswers = 0
     
     // массив вопросов
@@ -93,7 +90,7 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - Методы
     
-    // приватный метод конвертации, который принимает моковый вопрос и возвращает вью модель для главного экрана
+    // конвертация, - принимает моковый вопрос и возвращает вью модель для главного экрана
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
             // Преобразуем строку с именем изображения в UIImage
@@ -106,7 +103,7 @@ final class MovieQuizViewController: UIViewController {
         return questionStep
     }
     
-    // приватный метод вывода на экран вопроса, который принимает на вход вью модель вопроса и ничего не возвращает
+    // вывод на экран вопроса
     private func show(quiz step: QuizStepViewModel) {
         // Сброс рамки перед показом нового вопроса
         imageView.layer.borderWidth = 0
@@ -118,8 +115,7 @@ final class MovieQuizViewController: UIViewController {
         counterLabel.text = step.questionNumber
     }
     
-    // приватный метод, который меняет цвет рамки
-    // принимает на вход булевое значение и ничего не возвращает
+    // меняем цвет рамки
     private func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
@@ -134,8 +130,7 @@ final class MovieQuizViewController: UIViewController {
         }
     }
     
-    // приватный метод, который содержит логику перехода в один из сценариев
-    // метод ничего не принимает и ничего не возвращает
+    // логика перехода в один из сценариев
     private func showNextQuestionOrResult() {
         if currentQuestionIndex == questions.count - 1 {
             let text = "Ваш результат: \(correctAnswers)/10"
@@ -155,8 +150,7 @@ final class MovieQuizViewController: UIViewController {
         }
     }
     
-    // приватный метод для показа результатов раунда квиза
-    // принимает вью модель QuizResultsViewModel и ничего не возвращает
+    // показываем результат раунда квиза
     private func show(quiz result: QuizResultsViewModel) {
         let alert = UIAlertController(
             title: result.title,
