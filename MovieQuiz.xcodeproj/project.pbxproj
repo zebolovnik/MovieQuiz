@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2E0DE63D2C79AB1C00C36230 /* YS Display-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E0DE63B2C79AB1C00C36230 /* YS Display-Bold.ttf */; };
-		2E0DE63E2C79AB1C00C36230 /* YS Display-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E0DE63C2C79AB1C00C36230 /* YS Display-Medium.ttf */; };
+		2ED9AD012C80910800F7C9E7 /* YS Display-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E0DE63B2C79AB1C00C36230 /* YS Display-Bold.ttf */; };
+		2ED9AD022C80910A00F7C9E7 /* YS Display-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E0DE63C2C79AB1C00C36230 /* YS Display-Medium.ttf */; };
 		AD1ABAB22831907B00B3E448 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1ABAB12831907B00B3E448 /* AppDelegate.swift */; };
 		AD1ABAB42831907B00B3E448 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1ABAB32831907B00B3E448 /* SceneDelegate.swift */; };
 		AD1ABAB62831907B00B3E448 /* MovieQuizViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1ABAB52831907B00B3E448 /* MovieQuizViewController.swift */; };
@@ -47,20 +47,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		611342392B701CF6003FC2A4 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		6113423A2B701CF8003FC2A4 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
 		8F4738322848DE2A005DF65E /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -104,10 +90,8 @@
 				AD1ABAB12831907B00B3E448 /* AppDelegate.swift */,
 				AD1ABAB32831907B00B3E448 /* SceneDelegate.swift */,
 				ADF0CF75283FDAA10075F54D /* Helpers */,
-				611342392B701CF6003FC2A4 /* Models */,
 				8F4738322848DE2A005DF65E /* Presentation */,
 				8F4738332848DE46005DF65E /* Resources */,
-				6113423A2B701CF8003FC2A4 /* Services */,
 			);
 			path = MovieQuiz;
 			sourceTree = "<group>";
@@ -184,8 +168,8 @@
 				AD1ABABE2831907F00B3E448 /* LaunchScreen.storyboard in Resources */,
 				AD1ABABB2831907F00B3E448 /* Assets.xcassets in Resources */,
 				AD1ABAB92831907B00B3E448 /* Main.storyboard in Resources */,
-				2E0DE63D2C79AB1C00C36230 /* YS Display-Bold.ttf in Resources */,
-				2E0DE63E2C79AB1C00C36230 /* YS Display-Medium.ttf in Resources */,
+				2ED9AD012C80910800F7C9E7 /* YS Display-Bold.ttf in Resources */,
+				2ED9AD022C80910A00F7C9E7 /* YS Display-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
