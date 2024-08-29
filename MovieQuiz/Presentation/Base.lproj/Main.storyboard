@@ -9,6 +9,9 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
+        <array key="YS Display-Bold.ttf">
+            <string>YSDisplay-Bold</string>
+        </array>
         <array key="YS Display-Medium.ttf">
             <string>YSDisplay-Medium</string>
         </array>
@@ -120,7 +123,9 @@
                     <connections>
                         <outlet property="counterLabel" destination="lR1-ha-S6g" id="tZ9-3C-Tty"/>
                         <outlet property="imageView" destination="fBp-gP-Pc7" id="qjT-rr-AGK"/>
+                        <outlet property="noButton" destination="0uT-Nk-fMg" id="LiA-1D-Cec"/>
                         <outlet property="textLabel" destination="wJX-FS-wnE" id="lg7-2N-2cF"/>
+                        <outlet property="yesButton" destination="omZ-8V-wHe" id="LSt-ee-2Yh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
