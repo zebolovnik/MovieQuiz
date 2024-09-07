@@ -27,7 +27,7 @@ final class MovieQuizViewController: UIViewController {
     private var correctAnswers = 0 // для подсчёта правильных ответов
     
     private let questionAmount: Int = 10 // общее кол-во вопросов для квиза
-    private var questionFactory: QuestionFactory = QuestionFactory() // экземпляр фабрики вопросов
+    private var questionFactory: QuestionFactoryProtocol = QuestionFactory() // экземпляр фабрики вопросов
     private var currentQuestion: QuizQuestion? // вопрос, который видит пользователь
     
     // MARK: - Outlets
@@ -81,10 +81,6 @@ final class MovieQuizViewController: UIViewController {
         
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
-    
-    
-    
-    
     
     // MARK: - Методы
     
