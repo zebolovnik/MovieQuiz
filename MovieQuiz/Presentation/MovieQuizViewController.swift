@@ -15,11 +15,17 @@ final class MovieQuizViewController: UIViewController {
         let buttonText: String
     }
     
-    private struct QuizQuestion {
-        let image: String
-        let text: String
-        let correctAnswer: Bool
-    }
+    //    private struct QuizQuestion {
+    //        let image: String
+    //        let text: String
+    //        let correctAnswer: Bool
+    //    }
+    // MARK: - Private Properties
+    
+    private var currentQuestionIndex = 0 // Если вам нужно всегда показывать случайный вопрос (через метод requestNextQuestion() из QuestionFactory, и порядок вопросов не важен, то currentQuestionIndex можно убрать.
+    private var correctAnswers = 0 // для подсчёта правильных ответов
+//    gpt
+    private var questionFactory: QuestionFactory? // экземпляр фабрики вопросов
     
     // MARK: - Outlets
     @IBOutlet private var imageView: UIImageView!
@@ -31,54 +37,54 @@ final class MovieQuizViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        guard let currentQuestion = questions[safe: currentQuestionIndex] else {
-            print("Wow, easy there, our array isn't infinite, you know!")
-            return
-        }
-        let viewModel = convert(model: currentQuestion)
-        show(quiz: viewModel)
+//        gpt
+        questionFactory = QuestionFactory() // Инициализация фабрики вопросов
+        requestNextQuestion() // Запрашиваем следующий вопрос
+        //        guard let currentQuestion = questions[safe: currentQuestionIndex] else {
+        //            print("Wow, easy there, our array isn't infinite, you know!")
+        //            return
+        //        }
+//        let viewModel = convert(model: question)
+//        show(quiz: viewModel)
         
     }
     
     // MARK: - Actions
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         setButtonsEnabled(false)
-        
-        let currentQuestion = questions[currentQuestionIndex]
+//        gpt
+        let currentQuestion = questionFactory?.requestNextQuestion() // теперь обращаемся к фабрике
+//        let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = true
         
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion?.correctAnswer)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         setButtonsEnabled(false)
-        
-        let currentQuestion = questions[currentQuestionIndex]
+//        gpt
+        let currentQuestion = questionFactory?.requestNextQuestion() // теперь обращаемся к фабрике
+//        let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = false
         
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion?.correctAnswer)
     }
     
-    // MARK: - Private Properties
     
-    private var currentQuestionIndex = 0
-    private var correctAnswers = 0
     
-    private let questions: [QuizQuestion] = [
-        QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Kill Bill", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Avengers", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Green Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Old", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "The Ice Age Adventures of Buck Wild", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false)
-    ]
+    
     
     // MARK: - Методы
+    
+    // gpt
+    private func requestNextQuestion() {
+        guard let question = questionFactory?.requestNextQuestion() else {
+            print("Не удалось получить следующий вопрос.")
+            return
+        }
+        let viewModel = convert(model: question)
+        show(quiz: viewModel)
+    }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
@@ -124,8 +130,12 @@ final class MovieQuizViewController: UIViewController {
             show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
-            
-            let nextQuestion = questions[currentQuestionIndex]
+//            gpt // Запрашиваем следующий вопрос через фабрику
+            guard let nextQuestion = questionFactory?.requestNextQuestion() else {
+                        print("Не удалось получить следующий вопрос.")
+                        return
+                    }
+//            let nextQuestion = questions[currentQuestionIndex]
             let viewModel = convert(model: nextQuestion)
             show(quiz: viewModel)
         }
@@ -144,7 +154,12 @@ final class MovieQuizViewController: UIViewController {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             
-            let firstQuestion = self.questions[self.currentQuestionIndex]
+//            gpt
+            guard let firstQuestion = self.questionFactory?.requestNextQuestion() else {
+                print("Не удалось получить первый вопрос")
+                return
+            }
+//            let firstQuestion = self.questions[self.currentQuestionIndex]
             let viewModel = self.convert(model: firstQuestion)
             self.show(quiz: viewModel)
             
