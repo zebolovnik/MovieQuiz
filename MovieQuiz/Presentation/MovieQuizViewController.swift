@@ -2,25 +2,6 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
-    // MARK: - Data Models (модели данных для состояний)
-//    private struct QuizStepViewModel {
-//        let image: UIImage
-//        let question: String
-//        let questionNumber: String
-//    }
-    
-//    private struct QuizResultsViewModel {
-//        let title: String
-//        let text: String
-//        let buttonText: String
-//    }
-    
-    //    private struct QuizQuestion {
-    //        let image: String
-    //        let text: String
-    //        let correctAnswer: Bool
-    //    }
-    
     // MARK: - Private Properties
     
     private var currentQuestionIndex = 0 // Если вам нужно всегда показывать случайный вопрос (через метод requestNextQuestion() из QuestionFactory, и порядок вопросов не важен, то currentQuestionIndex можно убрать.
@@ -40,20 +21,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let nextQuestion = questionFactory.requestNextQuestion() {
-            currentQuestion = nextQuestion
-            let viewModel = convert(model: nextQuestion)
-            show(quiz: viewModel)
-        }
-////        gpt
-//        questionFactory = QuestionFactory() // Инициализация фабрики вопросов
-//        requestNextQuestion() // Запрашиваем следующий вопрос
-        //        guard let currentQuestion = questions[safe: currentQuestionIndex] else {
-        //            print("Wow, easy there, our array isn't infinite, you know!")
-        //            return
-        //        }
-//        let viewModel = convert(model: question)
-//        show(quiz: viewModel)
+        
+        let questionFactory = QuestionFactory()
+        questionFactory.setup(delegate: self)
+        self.questionFactory = questionFactory
+        
+        questionFactory.requestNextQuestion()
         
     }
     
@@ -99,11 +72,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Методы
     
     private func requestNextQuestion() {
-        if let question = questionFactory.requestNextQuestion() {
-            currentQuestion = question
-            let viewModel = convert(model: question)
-            show(quiz: viewModel)
-        }
+        questionFactory.requestNextQuestion()
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -135,13 +104,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.showNextQuestionOrResult()
+            self.showNextQuestionOrResults()
         }
     }
     
-    private func showNextQuestionOrResult() {
+    private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionAmount - 1 {
-//            let text = "Ваш результат: \(correctAnswers)/\(questionAmount)"
             let text = correctAnswers == questionAmount ?
             "Поздравляем, вы ответили на 10 из 10" :
             "Вы ответили на \(correctAnswers) из \(questionAmount), попробуйте еще раз!"
@@ -153,12 +121,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1
-            // Запрашиваем следующий вопрос через фабрику и сохраняем его в currentQuestion
-            if let nextQuestion = questionFactory.requestNextQuestion() {
-                currentQuestion = nextQuestion // Сохраняем сгенерированный вопрос
-                let viewModel = convert(model: nextQuestion)
-                show(quiz: viewModel)
-            }
+            
+            questionFactory.requestNextQuestion()
         }
         setButtonsEnabled(true)
     }
@@ -174,11 +138,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             
-            if let firstQuestion = self.questionFactory.requestNextQuestion() {
-                self.currentQuestion = firstQuestion
-                let viewModel = self.convert(model: firstQuestion)
-                self.show(quiz: viewModel)
-            }
+            self.questionFactory.requestNextQuestion()
+            
             self.setButtonsEnabled(true)
         }
         
