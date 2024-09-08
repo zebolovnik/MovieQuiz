@@ -11,6 +11,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol = QuestionFactory() // экземпляр фабрики вопросов
     private var currentQuestion: QuizQuestion? // вопрос, который видит пользователь
     
+    private var alertPresenter: AlertPresenter?
+    
     // MARK: - Outlets
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
@@ -25,6 +27,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let questionFactory = QuestionFactory()
         questionFactory.setup(delegate: self)
         self.questionFactory = questionFactory
+        self.alertPresenter = AlertPresenter(viewController: self)
         
         questionFactory.requestNextQuestion()
         
@@ -113,12 +116,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             let text = correctAnswers == questionAmount ?
             "Поздравляем, вы ответили на 10 из 10" :
             "Вы ответили на \(correctAnswers) из \(questionAmount), попробуйте еще раз!"
-            let viewModel = QuizResultsViewModel(
+            
+            let alertModel = AlertModel(
                 title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть еще раз"
+                message: text,
+                buttonText: "Сыграть еще раз",
+                completion: { [weak self] in
+                    self?.restartGame()
+                }
             )
-            show(quiz: viewModel)
+            
+            alertPresenter?.showAlert(with: alertModel)
         } else {
             currentQuestionIndex += 1
             
@@ -127,26 +135,33 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         setButtonsEnabled(true)
     }
     
-    private func show(quiz result: QuizResultsViewModel) {
-        let alert = UIAlertController(
-            title: result.title,
-            message: result.text,
-            preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            
-            self.questionFactory.requestNextQuestion()
-            
-            self.setButtonsEnabled(true)
-        }
-        
-        alert.addAction(action)
-        
-        self.present(alert, animated: true, completion: nil)
+    private func restartGame() {
+        currentQuestionIndex = 0
+        correctAnswers = 0
+        requestNextQuestion()
+        setButtonsEnabled(true)
     }
+    
+//    private func show(quiz result: QuizResultsViewModel) {
+//        let alert = UIAlertController(
+//            title: result.title,
+//            message: result.text,
+//            preferredStyle: .alert)
+//        
+//        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
+//            guard let self = self else { return }
+//            self.currentQuestionIndex = 0
+//            self.correctAnswers = 0
+//            
+//            self.questionFactory.requestNextQuestion()
+//            
+//            self.setButtonsEnabled(true)
+//        }
+//        
+//        alert.addAction(action)
+//        
+//        self.present(alert, animated: true, completion: nil)
+//    }
     
     private func setButtonsEnabled(_ isEnabled: Bool) {
         yesButton.isEnabled = isEnabled
