@@ -10,6 +10,7 @@ import Foundation
 final class StatisticService {
     
     private let storage: UserDefaults = .standard
+    
     // приватное свойства для хранения правильных ответов
     private var correctAnswers: Int {
         get {
@@ -20,16 +21,23 @@ final class StatisticService {
         }
     }
     
+    // Enum для работы с ключами в UserDefaults
+    private enum Keys: String {
+        case correct
+        case bestGame
+        case gamesCount
+    }
+    
 }
 
 extension StatisticService: StatisticServiceProtocol {
     
     var gamesCount: Int {
         get {
-            return storage.integer(forKey: "gamesCount")
+            return storage.integer(forKey: Keys.gamesCount.rawValue)
         }
         set {
-            storage.set(newValue, forKey: "gamesCount")
+            storage.set(newValue, forKey: Keys.gamesCount.rawValue)
         }
     }
     
@@ -50,8 +58,10 @@ extension StatisticService: StatisticServiceProtocol {
             // Получаем данные из UserDefaults
             let correct = storage.integer(forKey: "bestGame.correct")
             let total = storage.integer(forKey: "bestGame.total")
+            
             // Получаем дату
             let date = storage.object(forKey: "bestGame.date") as? Date ?? Date()
+            
             // создаем и возвращаем GameResult с полученными значениями
             return GameResult(correct: correct, total: total, date: date)
         }
@@ -64,7 +74,16 @@ extension StatisticService: StatisticServiceProtocol {
     }
     
     func store(correct count: Int, total amount: Int) {
+        correctAnswers += 1 // Обновляем общее количество правильных ответов
+        gamesCount += 1 // Увеличиваем количество сыгранных игр
         
+        // Создаем новый результат игры
+        let newGame = GameResult(correct: count, total: amount, date: Date())
+        
+        // Проверяем, если это лучший результат
+        if newGame.isBetterThan(bestGame) {
+            bestGame = newGame
+        }
     }
     
     
