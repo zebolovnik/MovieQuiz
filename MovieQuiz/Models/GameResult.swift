@@ -7,6 +7,6 @@ struct GameResult {
     
     // метод сравнения по количеству верных ответов
     func isBetterThan(_ another: GameResult) -> Bool {
-        correct > another.correct
+        correct >= another.correct
     }
 }
