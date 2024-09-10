@@ -4,18 +4,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Private Properties
     
-    private var statisticService: StatisticServiceProtocol? // новКод
+    private var currentQuestionIndex = 0
+    private var correctAnswers = 0
+    private let questionAmount: Int = 10
     
-    private var currentQuestionIndex = 0 // Если вам нужно всегда показывать случайный вопрос (через метод requestNextQuestion() из QuestionFactory, и порядок вопросов не важен, то currentQuestionIndex можно убрать.
-    private var correctAnswers = 0 // для подсчёта правильных ответов
-    
-    private let questionAmount: Int = 10 // общее кол-во вопросов для квиза
-    private var questionFactory: QuestionFactoryProtocol = QuestionFactory() // экземпляр фабрики вопросов
-    private var currentQuestion: QuizQuestion? // вопрос, который видит пользователь
-    
+    private var statisticService: StatisticServiceProtocol?
+    private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
+    private var currentQuestion: QuizQuestion?
     private var alertPresenter: AlertPresenter?
     
     // MARK: - Outlets
+    
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
@@ -23,6 +22,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private var yesButton: UIButton!
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -53,25 +53,19 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Actions
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         setButtonsEnabled(false)
-        
         guard let currentQuestion = currentQuestion else {
             return
         }
-        
         let givenAnswer = true
-        
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         setButtonsEnabled(false)
-        
         guard let currentQuestion = currentQuestion else {
             return
         }
-        
         let givenAnswer = false
-        
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -128,7 +122,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             let bestGameText = "Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))"
             let averageAccuracyText = "Средняя точность: \(accuracyText)%"
             
-            // формируем полный текст для алерта
             let text = """
             \(currentResultText)
             \(gamesPlayedText)

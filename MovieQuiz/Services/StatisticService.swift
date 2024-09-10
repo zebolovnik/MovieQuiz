@@ -4,14 +4,12 @@ final class StatisticService {
     
     private let storage: UserDefaults = .standard
     
-    // Enum для работы с ключами в UserDefaults
     private enum Keys: String {
         case correct
         case bestGame
         case gamesCount
     }
     
-    // приватное свойства для хранения правильных ответов
     private var correctAnswers: Int {
         get {
             return storage.integer(forKey: Keys.correct.rawValue)
@@ -20,7 +18,6 @@ final class StatisticService {
             storage.set(newValue, forKey: Keys.correct.rawValue)
         }
     }
-    
     
 }
 
@@ -38,7 +35,6 @@ extension StatisticService: StatisticServiceProtocol {
     var totalAccuracy: Double {
         guard gamesCount > 0 else { return 0.0 }
         
-        // Вычисляем среднюю точность
         let totalQuestions = gamesCount * 10
         let accuracy = (Double(correctAnswers) / Double(totalQuestions)) * 100
         
@@ -47,12 +43,10 @@ extension StatisticService: StatisticServiceProtocol {
     
     var bestGame: GameResult {
         get {
-            // Получаем данные из UserDefaults
             let correct = storage.integer(forKey: "bestGame.correct")
             let total = storage.integer(forKey: "bestGame.total")
             let date = storage.object(forKey: "bestGame.date") as? Date ?? Date()
             
-            // создаем и возвращаем GameResult с полученными значениями
             return GameResult(correct: correct, total: total, date: date)
         }
         set {
@@ -63,12 +57,12 @@ extension StatisticService: StatisticServiceProtocol {
     }
     
     func store(correct count: Int, total amount: Int) {
-        correctAnswers += count // Обновляем общее количество правильных ответов
-        gamesCount += 1 // Увеличиваем количество сыгранных игр
+        correctAnswers += count
+        gamesCount += 1
         
         // Создаем новый результат игры
         let newGame = GameResult(correct: count, total: amount, date: Date())
-        // Проверяем, если это лучший результат
+        
         if newGame.isBetterThan(bestGame) {
             bestGame = newGame
         }
