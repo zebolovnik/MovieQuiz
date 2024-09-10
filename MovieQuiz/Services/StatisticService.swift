@@ -1,10 +1,3 @@
-//
-//  StatisticService.swift
-//  MovieQuiz
-//
-//  Created by Nikolay Zebolov on 09.09.2024.
-//
-
 import Foundation
 
 final class StatisticService {
@@ -74,17 +67,15 @@ extension StatisticService: StatisticServiceProtocol {
     }
     
     func store(correct count: Int, total amount: Int) {
-        correctAnswers += 1 // Обновляем общее количество правильных ответов
+        correctAnswers += count // Обновляем общее количество правильных ответов
         gamesCount += 1 // Увеличиваем количество сыгранных игр
         
         // Создаем новый результат игры
         let newGame = GameResult(correct: count, total: amount, date: Date())
-        
         // Проверяем, если это лучший результат
         if newGame.isBetterThan(bestGame) {
             bestGame = newGame
         }
     }
-    
     
 }

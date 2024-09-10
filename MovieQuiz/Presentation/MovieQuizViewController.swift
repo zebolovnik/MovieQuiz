@@ -4,6 +4,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Private Properties
     
+    private var statisticService: StatisticServiceProtocol? // новКод
+    
     private var currentQuestionIndex = 0 // Если вам нужно всегда показывать случайный вопрос (через метод requestNextQuestion() из QuestionFactory, и порядок вопросов не важен, то currentQuestionIndex можно убрать.
     private var correctAnswers = 0 // для подсчёта правильных ответов
     
@@ -24,6 +26,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        statisticService = StatisticService()
         let questionFactory = QuestionFactory()
         questionFactory.setup(delegate: self)
         self.questionFactory = questionFactory
@@ -113,9 +116,25 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionAmount - 1 {
-            let text = correctAnswers == questionAmount ?
-            "Поздравляем, вы ответили на 10 из 10" :
-            "Вы ответили на \(correctAnswers) из \(questionAmount), попробуйте еще раз!"
+            guard let statisticService = statisticService else { return }
+            
+            // Сохраняем результаты игры в статистику
+            statisticService.store(correct: correctAnswers, total: questionAmount)
+            
+            let bestGame = statisticService.bestGame
+            let accuracyText = String(format: "%.2f", statisticService.totalAccuracy)
+            let currentResultText = "Ваш результат: \(correctAnswers)/\(questionAmount)"
+            let gamesPlayedText = "Количество сыгранных квизов: \(statisticService.gamesCount)"
+            let bestGameText = "Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))"
+            let averageAccuracyText = "Средняя точность: \(accuracyText)%"
+            
+            // формируем полный текст для алерта
+            let text = """
+            \(currentResultText)
+            \(gamesPlayedText)
+            \(bestGameText)
+            \(averageAccuracyText)
+            """
             
             let alertModel = AlertModel(
                 title: "Этот раунд окончен!",
@@ -129,7 +148,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             alertPresenter?.showAlert(with: alertModel)
         } else {
             currentQuestionIndex += 1
-            
             questionFactory.requestNextQuestion()
         }
         setButtonsEnabled(true)
@@ -141,27 +159,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         requestNextQuestion()
         setButtonsEnabled(true)
     }
-    
-//    private func show(quiz result: QuizResultsViewModel) {
-//        let alert = UIAlertController(
-//            title: result.title,
-//            message: result.text,
-//            preferredStyle: .alert)
-//        
-//        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-//            guard let self = self else { return }
-//            self.currentQuestionIndex = 0
-//            self.correctAnswers = 0
-//            
-//            self.questionFactory.requestNextQuestion()
-//            
-//            self.setButtonsEnabled(true)
-//        }
-//        
-//        alert.addAction(action)
-//        
-//        self.present(alert, animated: true, completion: nil)
-//    }
     
     private func setButtonsEnabled(_ isEnabled: Bool) {
         yesButton.isEnabled = isEnabled

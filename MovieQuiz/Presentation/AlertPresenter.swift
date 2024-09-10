@@ -1,10 +1,3 @@
-//
-//  AlertPresenter.swift
-//  MovieQuiz
-//
-//  Created by Nikolay Zebolov on 08.09.2024.
-//
-
 import Foundation
 import UIKit
 

@@ -1,10 +1,3 @@
-//
-//  StatisticServiceProtocol.swift
-//  MovieQuiz
-//
-//  Created by Nikolay Zebolov on 09.09.2024.
-//
-
 import Foundation
 
 protocol StatisticServiceProtocol {
