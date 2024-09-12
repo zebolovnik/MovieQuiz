@@ -4,10 +4,6 @@ class QuestionFactory: QuestionFactoryProtocol {
     
     weak var delegate: QuestionFactoryDelegate?
     
-    func setup(delegate: QuestionFactoryDelegate) {
-        self.delegate = delegate
-    }
-    
     private let questions: [QuizQuestion] = [
         QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
         QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
@@ -20,6 +16,10 @@ class QuestionFactory: QuestionFactoryProtocol {
         QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
         QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false)
     ]
+    
+    func setup(delegate: QuestionFactoryDelegate) {
+        self.delegate = delegate
+    }
     
     
     func requestNextQuestion() {
