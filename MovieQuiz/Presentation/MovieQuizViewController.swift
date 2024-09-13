@@ -20,6 +20,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var noButton: UIButton!
     @IBOutlet private var yesButton: UIButton!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Lifecycle
     
@@ -39,6 +40,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
+        // Показываем индикатор загрузки перед загрузкой вопроса
+        showLoadingIndicator()
+        
         guard let question = question else {
             return
         }
@@ -70,6 +74,38 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     // MARK: - Методы
+    
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.stopAnimating()
+        activityIndicator.isHidden = true
+    }
+    
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        // Создаем и показываем алерт с ошибкой сети
+        let alertModel = AlertModel(
+            title: "Ошибка сети",
+            message: message,
+            buttonText: "Попробовать ещё раз",
+            completion: { [weak self] in
+                guard let self = self else { return }
+                
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                
+                self.questionFactory.requestNextQuestion()
+            }
+        )
+        
+        alertPresenter?.showAlert(with: alertModel)
+    }
+    
     
     private func requestNextQuestion() {
         questionFactory.requestNextQuestion()
