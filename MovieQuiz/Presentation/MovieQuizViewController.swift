@@ -15,12 +15,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Outlets
     
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var textLabel: UILabel!
-    @IBOutlet private var counterLabel: UILabel!
-    @IBOutlet private var noButton: UIButton!
-    @IBOutlet private var yesButton: UIButton!
-    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var textLabel: UILabel!
+    @IBOutlet private weak var counterLabel: UILabel!
+    @IBOutlet private weak var noButton: UIButton!
+    @IBOutlet private weak var yesButton: UIButton!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Lifecycle
     
@@ -32,6 +32,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         statisticService = StatisticService()
         
         alertPresenter = AlertPresenter(viewController: self)
+        
+        activityIndicator.hidesWhenStopped = true
         
         showLoadingIndicator()
         questionFactory?.loadData()
@@ -60,33 +62,21 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Actions
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        setButtonsEnabled(false)
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = true
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        answerGived(answer: true)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        setButtonsEnabled(false)
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = false
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        answerGived(answer: false)
     }
     
     // MARK: - Методы
     
     private func showLoadingIndicator() {
-        activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
     
     private func hideLoadingIndicator() {
         activityIndicator.stopAnimating()
-        activityIndicator.isHidden = true
     }
     
     private func showNetworkError(message: String) {
@@ -196,6 +186,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func setButtonsEnabled(_ isEnabled: Bool) {
         yesButton.isEnabled = isEnabled
         noButton.isEnabled = isEnabled
+    }
+    
+    private func answerGived(answer: Bool) {
+        setButtonsEnabled(false)
+        
+        guard let currentQuestion = currentQuestion else {
+            return
+        }
+        
+        let isCorrect = answer == currentQuestion.correctAnswer
+        
+        showAnswerResult(isCorrect: isCorrect)
     }
     
     func didLoadDataFromServer() {
