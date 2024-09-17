@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E2324BF2C99A1C50061673E /* MovieQuizPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2324BE2C99A1C50061673E /* MovieQuizPresenter.swift */; };
 		2E4016E82C93CC100051DB41 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4016E72C93CC100051DB41 /* NetworkClient.swift */; };
 		2E4016EA2C93EB140051DB41 /* MostPopularMovies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4016E92C93EB140051DB41 /* MostPopularMovies.swift */; };
 		2E4016EC2C93EF8C0051DB41 /* MoviesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4016EB2C93EF8C0051DB41 /* MoviesLoader.swift */; };
@@ -57,6 +58,7 @@
 /* Begin PBXFileReference section */
 		2E0DE63B2C79AB1C00C36230 /* YS Display-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Bold.ttf"; sourceTree = "<group>"; };
 		2E0DE63C2C79AB1C00C36230 /* YS Display-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Medium.ttf"; sourceTree = "<group>"; };
+		2E2324BE2C99A1C50061673E /* MovieQuizPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuizPresenter.swift; sourceTree = "<group>"; };
 		2E4016E72C93CC100051DB41 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
 		2E4016E92C93EB140051DB41 /* MostPopularMovies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MostPopularMovies.swift; sourceTree = "<group>"; };
 		2E4016EB2C93EF8C0051DB41 /* MoviesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesLoader.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				AD1ABAB52831907B00B3E448 /* MovieQuizViewController.swift */,
+				2E2324BE2C99A1C50061673E /* MovieQuizPresenter.swift */,
 				2EDC3CE02C8D57F10076E36C /* AlertPresenter.swift */,
 				AD1ABAB72831907B00B3E448 /* Main.storyboard */,
 			);
@@ -376,6 +379,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E2324BF2C99A1C50061673E /* MovieQuizPresenter.swift in Sources */,
 				AD5EE5DE284D7887003966EF /* UIColor+Extensions.swift in Sources */,
 				2E4016EA2C93EB140051DB41 /* MostPopularMovies.swift in Sources */,
 				2EDC3CE12C8D57F10076E36C /* AlertPresenter.swift in Sources */,

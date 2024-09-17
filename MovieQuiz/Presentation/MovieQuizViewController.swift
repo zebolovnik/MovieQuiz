@@ -13,12 +13,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Private Properties
     private var correctAnswers = 0
     
-    private var currentQuestionIndex = 0
-    private let questionsAmount: Int = 10
+//    private var currentQuestionIndex = 0
+//    private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticService?
     private var alertPresenter: AlertPresenter?
+    private let presenter = MovieQuizPresenter()
     
     
     // MARK: - Lifecycle
@@ -49,7 +50,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
         
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
             self?.hideLoadingIndicator()
@@ -78,14 +79,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Private functions
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
-        )
-        return questionStep
-    }
+//    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+//        let questionStep = QuizStepViewModel(
+//            image: UIImage(data: model.image) ?? UIImage(),
+//            question: model.text,
+//            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
+//        )
+//        return questionStep
+//    }
     
     private func show(quiz step: QuizStepViewModel) {
         imageView.layer.borderColor = UIColor.clear.cgColor
@@ -96,15 +97,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
+        if presenter.isLastQuestion() {
             guard let statisticService = statisticService else { return }
             
             // Сохраняем результаты игры в статистику
-            statisticService.store(correct: correctAnswers, total: questionsAmount)
+            statisticService.store(correct: correctAnswers, total: presenter.questionsAmount)
             
             let bestGame = statisticService.bestGame
             
-            let currentResultText = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+            let currentResultText = "Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)"
             let gamesPlayedText = "Количество сыгранных квизов: \(statisticService.gamesCount)"
             let bestGameText = "Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))"
             let averageAccuracyText = "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
@@ -127,7 +128,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             
             alertPresenter?.showAlert(in: self, model: alertModel)
         } else {
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             requestNextQuestion()
         }
         setButtonsEnabled(true)
@@ -171,7 +172,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             completion: { [weak self] in
                 guard let self = self else { return }
                 
-                self.currentQuestionIndex = 0
+                self.presenter.resetQuestionIndex()
                 self.correctAnswers = 0
                 
                 self.requestNextQuestion()
@@ -182,7 +183,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func restartGame() {
-        currentQuestionIndex = 0
+        presenter.resetQuestionIndex()
         correctAnswers = 0
         requestNextQuestion()
         setButtonsEnabled(true)
