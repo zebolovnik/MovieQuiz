@@ -1,8 +1,11 @@
 import Foundation
+import UIKit
 
 final class QuestionFactory: QuestionFactoryProtocol {
     private let moviesLoader: MoviesLoading
+    
     private weak var delegate: QuestionFactoryDelegate?
+    
     private var movies: [MostPopularMovie] = []
     
     init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate?) {
@@ -11,8 +14,8 @@ final class QuestionFactory: QuestionFactoryProtocol {
     }
     
     func loadData() {
-        moviesLoader.loadMovies { [weak self] result in
-            DispatchQueue.main.async {
+        moviesLoader.loadMovies { result in
+            DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 switch result {
                 case .success(let mostPopularMovies):
@@ -22,13 +25,6 @@ final class QuestionFactory: QuestionFactoryProtocol {
                     self.delegate?.didFailToLoadData(with: error)
                 }
             }
-        }
-    }
-    
-    // метод для симуляции ошибки
-    func simulateError() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.delegate?.didFailToLoadData(with: NSError(domain: "TestErrorDomain", code: 999, userInfo: [NSLocalizedDescriptionKey: "Это симуляция ошибки"]))
         }
     }
     
