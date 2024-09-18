@@ -18,20 +18,20 @@ final class MovieQuizPresenter {
     // MARK: - Пока так
     
     func yesButtonClicked() {
-        answerGived(answer: true)
+        answerGived(isYes: true)
     }
     
     func noButtonClicked() {
-        answerGived(answer: false)
+        answerGived(isYes: false)
     }
     
-    func answerGived(answer: Bool) {
+    func answerGived(isYes: Bool) {
         setButtonsEnabled(false)
         
         guard let currentQuestion = currentQuestion else { return }
         
         // Проверка правильного ответа
-        let isCorrect = answer == currentQuestion.correctAnswer
+        let isCorrect = isYes == currentQuestion.correctAnswer
         
         // Показываем результат ответа через viewController
         viewController?.showAnswerResult(isCorrect: isCorrect)
@@ -43,6 +43,20 @@ final class MovieQuizPresenter {
         viewController?.noButton.isEnabled = isEnabled
     }
     
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        viewController?.showLoadingIndicator()
+        
+        guard let question = question else {
+            return
+        }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.show(quiz: viewModel)
+            self?.viewController?.hideLoadingIndicator()
+        }
+    }
     
     // MARK: - Public methods
     
