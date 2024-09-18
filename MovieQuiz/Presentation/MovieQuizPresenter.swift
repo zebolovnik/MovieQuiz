@@ -10,10 +10,14 @@ import UIKit
 
 final class MovieQuizPresenter {
     
+    var correctAnswers: Int = 0
     let questionsAmount: Int = 10
     private var currentQuestionIndex: Int = 0
     private var currentQuestion: QuizQuestion?
     weak var viewController: MovieQuizViewController?
+    var statisticService: StatisticService?
+    var alertPresenter: AlertPresenter?
+    var questionFactory: QuestionFactoryProtocol?
     
     // MARK: - Пока так
     
@@ -55,6 +59,55 @@ final class MovieQuizPresenter {
         DispatchQueue.main.async { [weak self] in
             self?.viewController?.show(quiz: viewModel)
             self?.viewController?.hideLoadingIndicator()
+        }
+    }
+    
+    func showNextQuestionOrResults() {
+        if self.isLastQuestion() {
+            guard let statisticService = statisticService else { return }
+            
+            // Сохраняем результаты игры в статистику
+            statisticService.store(correct: correctAnswers, total: self.questionsAmount)
+            
+            let bestGame = statisticService.bestGame
+            
+            let currentResultText = "Ваш результат: \(correctAnswers)/\(self.questionsAmount)"
+            let gamesPlayedText = "Количество сыгранных квизов: \(statisticService.gamesCount)"
+            let bestGameText = "Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))"
+            let averageAccuracyText = "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
+            
+            let text = """
+            \(currentResultText)
+            \(gamesPlayedText)
+            \(bestGameText)
+            \(averageAccuracyText)
+            """
+            
+            let alertModel = AlertModel(
+                title: "Этот раунд окончен!",
+                message: text,
+                buttonText: "Сыграть ещё раз",
+                completion: { [weak self] in
+                    self?.restartGame()
+                }
+            )
+            
+            if let viewController = viewController {
+                alertPresenter?.showAlert(in: viewController, model: alertModel)
+            }
+        } else {
+            self.switchToNextQuestion()
+            viewController?.requestNextQuestion()
+        }
+        self.setButtonsEnabled(true)
+    }
+    
+    func restartGame() {
+        resetQuestionIndex()
+        correctAnswers = 0
+        if let viewController = viewController {
+            viewController.requestNextQuestion()
+            setButtonsEnabled(true)
         }
     }
     
