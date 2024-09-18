@@ -30,7 +30,17 @@ final class MovieQuizViewController: UIViewController {
         presenter.noButtonClicked()
     }
 
-    // MARK: - Private functions
+    // MARK: - Public functions
+    
+    func disableButtons() {
+        yesButton.isEnabled = false
+        noButton.isEnabled = false
+    }
+
+    func enableButtons() {
+        yesButton.isEnabled = true
+        noButton.isEnabled = true
+    }
 
     func show(quiz step: QuizStepViewModel) {
         imageView.layer.borderColor = UIColor.clear.cgColor
