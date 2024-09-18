@@ -1,8 +1,8 @@
 import Foundation
 
 struct GameResult: Codable {
-    let correct: Int // количество правильных ответов
-    let total: Int // кол-во вопросов квиза
+    let correct: Int
+    let total: Int
     let date: Date
     
     func isBetterThan(_ another: GameResult) -> Bool {

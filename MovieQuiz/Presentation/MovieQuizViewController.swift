@@ -1,134 +1,94 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-    
-    // MARK: - Outlets
-    @IBOutlet weak var imageView: UIImageView! // Убран модификатор private
-    @IBOutlet private weak var textLabel: UILabel!
-    @IBOutlet private weak var counterLabel: UILabel!
-    @IBOutlet weak var noButton: UIButton!
-    @IBOutlet weak var yesButton: UIButton!
-    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
-    
-    // MARK: - Private Properties
-    private var correctAnswers = 0
-    
-    private var questionFactory: QuestionFactoryProtocol?
-    private var statisticService: StatisticService?
-    private var alertPresenter: AlertPresenter?
-    private let presenter = MovieQuizPresenter()
-    
-    
+final class MovieQuizViewController: UIViewController {
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var textLabel: UILabel!
+    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private var yesButton: UIButton!
+    @IBOutlet private var noButton: UIButton!
+
+    private var presenter: MovieQuizPresenter!
+
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Устанавливаем ссылку на self в presenter
-        presenter.viewController = self
-        presenter.statisticService = statisticService
-        presenter.alertPresenter = alertPresenter
-        presenter.questionFactory = questionFactory
-        
-        imageView.layer.cornerRadius = 20
-        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-        statisticService = StatisticServiceImplementation()
-        alertPresenter = AlertPresenter(viewController: self)
-        
-        activityIndicator.hidesWhenStopped = true
-        questionFactory?.loadData()
-        showLoadingIndicator()
 
+        presenter = MovieQuizPresenter(viewController: self)
+
+        imageView.layer.cornerRadius = 20
     }
-    
-    // MARK: - QuestionFactoryDelegate
-    
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        presenter.didReceiveNextQuestion(question: question)
-    }
-    
-    func didLoadDataFromServer() {
-        hideLoadingIndicator()
-        requestNextQuestion()
-    }
-    
-    func didFailToLoadData(with error: Error) {
-        hideLoadingIndicator()
-        showNetworkError(message: error.localizedDescription)
-    }
-    
+
     // MARK: - Actions
-    
-    @IBAction func yesButtonClicked(_ sender: UIButton) {
+
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
         presenter.yesButtonClicked()
     }
-    
+
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         presenter.noButtonClicked()
     }
-    
+
     // MARK: - Private functions
-    
+
     func show(quiz step: QuizStepViewModel) {
         imageView.layer.borderColor = UIColor.clear.cgColor
-        
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
     }
 
-    private func showNextQuestionOrResults() {
-        presenter.showNextQuestionOrResults()
+    func show(quiz result: QuizResultsViewModel) {
+        let message = presenter.makeResultsMessage()
+
+        let alert = UIAlertController(
+            title: result.title,
+            message: message,
+            preferredStyle: .alert)
+
+            let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
+                guard let self = self else { return }
+
+                self.presenter.restartGame()
+            }
+
+        alert.addAction(action)
+
+        self.present(alert, animated: true, completion: nil)
     }
-    
-    func requestNextQuestion() {
-        questionFactory?.requestNextQuestion()
-    }
-    
-    func showAnswerResult(isCorrect: Bool) {
-        if isCorrect {
-            correctAnswers += 1
-        }
-        
+
+    func highlightImageBorder(isCorrectAnswer: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            self.presenter.correctAnswers = self.correctAnswers
-            self.presenter.questionFactory = self.questionFactory
-            self.presenter.showNextQuestionOrResults()
-        }
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
     }
-    
+
     func showLoadingIndicator() {
-        activityIndicator.startAnimating()
+        activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
+        activityIndicator.startAnimating() // включаем анимацию
     }
-    
+
     func hideLoadingIndicator() {
-        activityIndicator.stopAnimating()
+        activityIndicator.isHidden = true
     }
-    
-    private func showNetworkError(message: String) {
+
+    func showNetworkError(message: String) {
         hideLoadingIndicator()
-        
-        // алерт с ошибкой сети
-        let alertModel = AlertModel(
-            title: "Ошибка сети",
+
+        let alert = UIAlertController(
+            title: "Ошибка",
             message: message,
-            buttonText: "Попробовать ещё раз",
-            completion: { [weak self] in
+            preferredStyle: .alert)
+
+            let action = UIAlertAction(title: "Попробовать ещё раз",
+            style: .default) { [weak self] _ in
                 guard let self = self else { return }
-                
-                self.presenter.resetQuestionIndex()
-                self.correctAnswers = 0
-                
-                self.requestNextQuestion()
+
+                self.presenter.restartGame()
             }
-        )
-        
-        alertPresenter?.showAlert(in: self, model: alertModel)
+
+        alert.addAction(action)
     }
-    
 }
+

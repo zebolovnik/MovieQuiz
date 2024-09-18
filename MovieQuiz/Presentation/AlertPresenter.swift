@@ -1,14 +1,9 @@
 import Foundation
 import UIKit
 
-final class AlertPresenter {
-    private weak var viewController: UIViewController?
+class AlertPresenter {
     
-    init(viewController: UIViewController) {
-        self.viewController = viewController
-    }
-    
-    func showAlert(in vc: UIViewController, model: AlertModel) {
+    func show(in vc: UIViewController, model: AlertModel) {
         let alert = UIAlertController(
             title: model.title,
             message: model.message,
