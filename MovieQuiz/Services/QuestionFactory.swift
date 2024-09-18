@@ -28,11 +28,6 @@ final class QuestionFactory: QuestionFactoryProtocol {
         }
     }
     
-//    func setup(delegate: QuestionFactoryDelegate) {
-//        self.delegate = delegate
-//    }
-    
-    
     func requestNextQuestion() {
         DispatchQueue.global().async { [weak self] in
             guard
