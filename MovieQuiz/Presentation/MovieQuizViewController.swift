@@ -3,11 +3,11 @@ import UIKit
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Outlets
-    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet weak var imageView: UIImageView! // Убран модификатор private
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
-    @IBOutlet private weak var noButton: UIButton!
-    @IBOutlet private weak var yesButton: UIButton!
+    @IBOutlet weak var noButton: UIButton!
+    @IBOutlet weak var yesButton: UIButton!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Private Properties
@@ -16,7 +16,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 //    private var currentQuestionIndex = 0
 //    private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
-    private var currentQuestion: QuizQuestion?
+//    private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticService?
     private var alertPresenter: AlertPresenter?
     private let presenter = MovieQuizPresenter()
@@ -27,6 +27,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Устанавливаем ссылку на self в presenter
+        presenter.viewController = self
+        
         imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         statisticService = StatisticServiceImplementation()
@@ -34,7 +37,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         alertPresenter = AlertPresenter(viewController: self)
         
         activityIndicator.hidesWhenStopped = true
-        
         questionFactory?.loadData()
         showLoadingIndicator()
 
@@ -49,7 +51,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             return
         }
         
-        currentQuestion = question
+//        currentQuestion = question
         let viewModel = presenter.convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
@@ -69,12 +71,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Actions
     
-    @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        answerGived(answer: true)
+    @IBAction func yesButtonClicked(_ sender: UIButton) {
+        presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        answerGived(answer: false)
+        presenter.noButtonClicked()
     }
     
     // MARK: - Private functions
@@ -131,14 +133,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             presenter.switchToNextQuestion()
             requestNextQuestion()
         }
-        setButtonsEnabled(true)
+        presenter.setButtonsEnabled(true)
     }
     
     private func requestNextQuestion() {
         questionFactory?.requestNextQuestion()
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
         }
@@ -186,22 +188,22 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         presenter.resetQuestionIndex()
         correctAnswers = 0
         requestNextQuestion()
-        setButtonsEnabled(true)
+        presenter.setButtonsEnabled(true)
     }
     
-    private func setButtonsEnabled(_ isEnabled: Bool) {
-        yesButton.isEnabled = isEnabled
-        noButton.isEnabled = isEnabled
-    }
+//    private func setButtonsEnabled(_ isEnabled: Bool) {
+//        yesButton.isEnabled = isEnabled
+//        noButton.isEnabled = isEnabled
+//    }
     
-    private func answerGived(answer: Bool) {
-        setButtonsEnabled(false)
-        
-        guard let currentQuestion = currentQuestion else { return }
-        
-        let isCorrect = answer == currentQuestion.correctAnswer
-        
-        showAnswerResult(isCorrect: isCorrect)
-    }
+//    private func answerGived(answer: Bool) {
+//        setButtonsEnabled(false)
+//        
+//        guard let currentQuestion = currentQuestion else { return }
+//        
+//        let isCorrect = answer == currentQuestion.correctAnswer
+//        
+//        showAnswerResult(isCorrect: isCorrect)
+//    }
     
 }
